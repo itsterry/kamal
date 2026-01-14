@@ -1,5 +1,32 @@
 require "test_helper"
 
+class SshkitHostToSTest < ActiveSupport::TestCase
+  test "host without port returns hostname only" do
+    host = SSHKit::Host.new("1.1.1.1")
+    assert_equal "1.1.1.1", host.to_s
+  end
+
+  test "host with port returns hostname:port" do
+    host = SSHKit::Host.new("1.1.1.1:2222")
+    assert_equal "1.1.1.1:2222", host.to_s
+    assert_equal "1.1.1.1", host.hostname
+    assert_equal 2222, host.port
+  end
+
+  test "host with user and port returns hostname:port" do
+    host = SSHKit::Host.new("user@1.1.1.1:2222")
+    assert_equal "1.1.1.1:2222", host.to_s
+    assert_equal "user", host.username
+    assert_equal "1.1.1.1", host.hostname
+    assert_equal 2222, host.port
+  end
+
+  test "host with standard port returns hostname only" do
+    host = SSHKit::Host.new("1.1.1.1:22")
+    assert_equal "1.1.1.1", host.to_s
+  end
+end
+
 class SshkitDnsRetryTest < ActiveSupport::TestCase
   setup do
     SSHKit::Backend::Netssh.configure { |config| config.dns_retries = 2 }

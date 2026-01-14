@@ -104,6 +104,25 @@ class CommanderTest < ActiveSupport::TestCase
     assert_equal [ "web", "workers" ], @kamal.roles_on("1.1.1.1").map(&:name)
   end
 
+  test "hosts with custom ssh ports" do
+    configure_with(:deploy_with_host_ports)
+    assert_equal [ "1.1.1.1:2222", "1.1.1.2:2223", "1.1.1.3", "1.1.1.4:2224" ], @kamal.hosts
+    assert_equal "1.1.1.1:2222", @kamal.primary_host
+  end
+
+  test "roles_on with host ports" do
+    configure_with(:deploy_with_host_ports)
+    assert_equal [ "web" ], @kamal.roles_on("1.1.1.1:2222").map(&:name)
+    assert_equal [ "workers" ], @kamal.roles_on("1.1.1.3").map(&:name)
+    assert_equal [ "workers" ], @kamal.roles_on("1.1.1.4:2224").map(&:name)
+  end
+
+  test "filtering hosts with ports" do
+    configure_with(:deploy_with_host_ports)
+    @kamal.specific_hosts = [ "1.1.1.1:2222" ]
+    assert_equal [ "1.1.1.1:2222" ], @kamal.hosts
+  end
+
   test "try to match the primary role from a list of specific roles" do
     configure_with(:deploy_primary_web_role_override)
 

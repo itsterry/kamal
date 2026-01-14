@@ -9,6 +9,16 @@ servers:
   - 172.0.0.2
   - 172.0.0.3
 
+# Custom SSH ports
+#
+# Each server can specify a custom SSH port using the format `hostname:port`.
+# This is useful when servers on the same IP are accessible via different ports.
+# The per-host port overrides the global `ssh.port` setting for that specific server.
+servers:
+  - 172.0.0.1
+  - 172.0.0.2:2222
+  - 172.0.0.3:2223
+
 # Tagging servers
 #
 # Servers can be tagged, with the tags used to add custom env variables (see kamal docs env).

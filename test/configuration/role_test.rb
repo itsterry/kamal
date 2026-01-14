@@ -29,6 +29,17 @@ class ConfigurationRoleTest < ActiveSupport::TestCase
     assert_equal [ "1.1.1.3", "1.1.1.4" ], config_with_roles.role(:workers).hosts
   end
 
+  test "hosts with custom ssh ports" do
+    @deploy_with_roles[:servers]["web"] = [ "1.1.1.1:2222", "1.1.1.2:2223" ]
+    assert_equal [ "1.1.1.1:2222", "1.1.1.2:2223" ], config_with_roles.role(:web).hosts
+    assert_equal "1.1.1.1:2222", config_with_roles.role(:web).primary_host
+  end
+
+  test "hosts with mixed ports" do
+    @deploy_with_roles[:servers]["web"] = [ "1.1.1.1", "1.1.1.2:2223" ]
+    assert_equal [ "1.1.1.1", "1.1.1.2:2223" ], config_with_roles.role(:web).hosts
+  end
+
   test "missing env tag is ignored" do
     @deploy_with_roles[:servers]["workers"]["hosts"] = [ { "1.1.1.3" => [ "job" ] } ]
 

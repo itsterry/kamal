@@ -6,6 +6,19 @@ require "json"
 require "resolv"
 require "concurrent/atomic/semaphore"
 
+class SSHKit::Host
+  # Override to_s to include the port when explicitly specified in the host string
+  # and it differs from the default SSH port (22).
+  # This ensures that hosts specified as "1.1.1.1:2222" in deploy.yml will match
+  # correctly in comparisons like role.hosts.include?(host.to_s).
+  module IncludePortInToS
+    def to_s
+      port && port != 22 ? "#{hostname}:#{port}" : hostname
+    end
+  end
+  prepend IncludePortInToS
+end
+
 class SSHKit::Backend::Abstract
   def capture_with_info(*args, **kwargs)
     capture(*args, **kwargs, verbosity: Logger::INFO)
